@@ -1,5 +1,7 @@
 package tp1.logic.gameobjects;
 
+import tp1.exceptions.GameParseException;
+import tp1.exceptions.OffBoardException;
 import tp1.logic.Action;
 import tp1.logic.ActionList;
 import tp1.view.Messages;
@@ -269,19 +271,27 @@ public class Mario extends MovingObject{
 	
 	
 	@Override // ao (1,2) M R B
-	public Mario parse(String[] objectDescription, GameWorld game) {
-		GameObject go = super.parse(objectDescription, game); //parsea la posicion, el nombre y la acción
+	public Mario parse(String[] objectDescription, GameWorld game) throws GameParseException, OffBoardException {
+		GameObject go = super.parse(objectDescription, game); //parsea la posicion, el nombre y la acción //ESTO PUEDE LANZAR EXCEPCIONES DE ACTIN, POSITION Y OFFBOARD
 		if (go!= null) {
 			Mario mario = (Mario)go; //si el objeto no es nulo, es un Mario
 			
-			//parse del estado
+			if (objectDescription.length > 4) {
+				//throw new EXCEPCION DEL TAMAÑO DE MARIOOO
+			}
 			if (objectDescription.length == 4) {
+				//parse del tamaño
+				
 				String strState = objectDescription[3].toUpperCase();
 				if(strState.equals(Messages.STATE_SMALL) || strState.equals(Messages.STATE_SMALL_SHORTCUT)) {
 					mario.big = false;
 				}
-				//si no se especifica, se pone el valor por defecto
+				else if (strState.equals(Messages.STATE_BIG) || strState.equals(Messages.STATE_BIG_SHORTCUT)) {
+					mario.big = true;
+				}
+				else throw new GameParseException();
 			}
+			//si el tamaño era menor a 4 (no se especifica el tamaño) se pone por defecto
 			return mario;
 		}
 		return null;

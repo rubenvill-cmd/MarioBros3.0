@@ -1,6 +1,10 @@
 package tp1.logic;
 
 import java.util.Objects;
+import tp1.view.Messages;
+
+import tp1.exceptions.OffBoardException;
+import tp1.exceptions.PositionParseException;
 
 public class Position {
 
@@ -53,33 +57,32 @@ public class Position {
 		return "(" + row + "," + col + ")";
 	}
 	//Método llamado por el parse de GameObject.
-	public static Position parsePos(String[] objDescription) { 
-		//1. variable auxiliar coge el string de la posición con formato "(x,y)" de objDescription[0].
-		String posInStr = objDescription[0];
-		//2. verificamos si la posición dada por el usuario está entre paréntesis con .startsWith y .endsWith.
+	public static Position parsePos(String[] objDescription) throws PositionParseException, OffBoardException { 
+		String posInStr = objDescription[0]; //substring (2,1)
+		
 		if(posInStr.startsWith("(") && posInStr.endsWith(")")) { 
-			//3.Creamos una array de coordenadas
-			String[] coords = posInStr.substring(1, posInStr.length() - 1).split(","); 
-			//Creamos una substring de la original ignorando los parentesis y la separamos en dos mitades a partir de la coma: coords[0] = x, coords[1] = y.
-		    if(coords.length == 2) { 
+			String[] coords = posInStr.substring(1, posInStr.length() - 1).split(",");
+			
+			if(coords.length == 2) { 
 		    	try {
-		    		//4. Utilizamos este método de integer para obtener un número de una string.
 		    		int row = Integer.parseInt(coords[0]);
 		    		
 		    		int col = Integer.parseInt(coords[1]);
-		    		//5. Después creamos la posición con los valores obtenidos.
 		    		Position pos = new Position(row, col);
-		    		//6. Comprobamos que la posición introducida no está fuera del tablero.
 		    		if(!(pos.exitsBoard())) {
-		    			//7. devolvemos la posición para el parse del objeto.
 		    			return pos; 
 		    		}
-		    	} catch (NumberFormatException e) {
-		    		return null;
+		    		else throw new OffBoardException(Messages.POS_OFFBOARD.formatted(posInStr)); //POSICIÓN FUERA DEL RANGO DEL TABLERO
+		    	}
+		    	catch (NumberFormatException e) {
+		    		throw new PositionParseException(Messages.INVALID_POS.formatted(posInStr), e); //NO CONTIENE NUMEROS; NO SE COMO PONER PARA Q TAMBIEN SE MUESTRE FOR INPUT STRING:A
 		    	}
 		    }
+			else throw new PositionParseException(Messages.INVALID_POS.formatted(posInStr)); //FORMATO INVALIDO DE CARACTERES INSUFICIENTES
 		}
-		return null;
+		
+		else throw new PositionParseException(Messages.INVALID_POS.formatted(posInStr)); //FORMATO INVALIDO DE PARENTESIS
+		//return null;
 	}
 }
 

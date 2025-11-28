@@ -3,6 +3,9 @@ package tp1.logic.gameobjects;
 import tp1.logic.Position;
 import tp1.logic.GameInterfaces.GameWorld;
 import tp1.view.Messages;
+import tp1.exceptions.GameParseException;
+import tp1.exceptions.ObjectParseException;
+import tp1.exceptions.OffBoardException;
 import tp1.logic.Action;
 
 public class Box extends GameObject{
@@ -101,5 +104,48 @@ public class Box extends GameObject{
 	protected GameObject createObject(GameWorld game, Position pos) {
 		return new Box(game, pos);
 	}
+	
+	
+	//AYUDA CON EL PARSE DEL BOX PORFA :(
+	@Override
+	public GameObject parse(String[] objectDescription, GameWorld game) throws GameParseException, OffBoardException{
+		GameObject go = super.parse(objectDescription, game); //parsea la posición y el nombre //PUEDE DAR OBJECTPARSE EXC Y POSITIONPARSEEXCEPTION
+		if (go!= null) {
+			Box obj = (Box) go;
+			//parse deL estado
+			//try {
+				if(objectDescription.length > 2){ //la descripción contiene acción
+					boolean f = parseBoxState(objectDescription); //SI EL OBJETO DA NULL, VA A SALTAR EXCEPCION, Y SI NO HAY OTRA LETRA, SE PONE LA ACT AUTOMATICA
+					obj.full = f;
+					return obj; //devuelve el objeto parseado (posición, nombre, acción)
+				}
+				else {obj.full = true;}
+				return obj; //devuelve el objeto parseado (posición, nombre, accion por defecto)
+			/*}
+			catch (ObjectParseException e) { throw new GameParseException(Messages.INVALID_BOX_STATUS.formatted(objectDescription));
+			}*/
+			
+			}
+		
+		return null; //NO SE SI HAY QUE PONER EL RETURN NULL (creo que si pq si es null es pq no se ha matcheado el Name)
+	}
+	
+	private boolean parseBoxState(String[] objectDescription) throws GameParseException{
+		String strState = objectDescription[2].toUpperCase();
+		//ME HE INVENTADO LO DE LA CLASE BOOLEAN AYUDA
+		Boolean f = strToState(strState);
+		if (f != null) {return f;}
+		else throw new GameParseException(Messages.INVALID_BOX_STATUS.formatted(objectDescription));
+	}
+	private Boolean strToState(String state) {
+		if (state.equals(Messages.STATE_BOX_EMPTY) || state.equals(Messages.STATE_BOX_EMPTY_SHORTCUT)) {
+			return false;
+		}
+		else if (state.equals(Messages.STATE_BOX_FULL) || state.equals(Messages.STATE_BOX_FULL_SHORTCUT)) {
+			return true;
+		}
+		return null;
+	}
+	
 }
 

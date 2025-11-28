@@ -1,6 +1,5 @@
 package tp1.logic.gameobjects;
 
-import tp1.control.commands.exceptions.CommandExecuteException;
 import tp1.logic.Position;
 import tp1.logic.GameInterfaces.GameWorld;
 import tp1.view.Messages;
