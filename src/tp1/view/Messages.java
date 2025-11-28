@@ -110,6 +110,15 @@ public class Messages {
 	public static final String COMMAND_ADDOBJECT_HELP = "adds to the board the object given by object_description.";
 	public static final String COMMAND_ADDOBJECT_EXECUTION_EXAMPLE = "<object_description> = (col,row) objName [dir [BIG|SMALL]]. Ej. (12,3) Mario LEFT SMALL";
 	public static final String COMMAND_ADDOBJECT_ERROR = "Object parse error, too much args: '%s'"; //!
+		//GAMEMODEL EXCEPTIONS
+		public static final String POS_OFFBOARD = "Object position is off board: '%s'";
+		public static final String INVALID_OBJ_POS = "Invalid object position: '%s'";
+		public static final String INVALID_POS = "Invalid position: '%s'";
+		public static final String UNKNOWN_DIR = "Unknown moving object direction: '%s'";
+		public static final String INVALID_DIR = "Unknown action: '%s'";
+		public static final String UNKNOWN_OBJECT = "Unknown game object: '%s'";
+		public static final String INVALID_BOX_STATUS = "Invalid Box status: '%s'";
+		public static final String INVALID_MARIO_SIZE = "Invalid Mario size: '%s'";
 	
 	//GAMEOBJECTS
 	
@@ -147,6 +156,10 @@ public class Messages {
 	public static final String STATE_BIG_SHORTCUT = "B";
 	public static final String STATE_SMALL = "SMALL";
 	public static final String STATE_SMALL_SHORTCUT = "S";
+	public static final String STATE_BOX_FULL = "FULL";
+	public static final String STATE_BOX_FULL_SHORTCUT = "F";
+	public static final String STATE_BOX_EMPTY = "EMPTY";
+	public static final String STATE_BOX_EMPTY_SHORTCUT = "E";
 	
 //Symbols
 	public static final String EMPTY = "";
