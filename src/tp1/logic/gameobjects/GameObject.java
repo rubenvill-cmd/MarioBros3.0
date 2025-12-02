@@ -1,6 +1,9 @@
 package tp1.logic.gameobjects;
 
-import tp1.control.commands.exceptions.CommandExecuteException;
+import tp1.exceptions.GameParseException;
+import tp1.view.Messages;
+import tp1.exceptions.OffBoardException;
+import tp1.exceptions.PositionParseException;
 import tp1.logic.Action;
 import tp1.logic.GameInterfaces.GameWorld;
 //import tp1.logic.Game;
@@ -86,13 +89,29 @@ public abstract class GameObject implements GameItem{
 	}
 	
 	//parse de la posición y el nombre
-	public GameObject parse(String[] objDescription, GameWorld game) {
-		if(objDescription.length >= 2 && matchName(objDescription[1])){ //parsea el objeto si la longitud es de dos o más, y si el nombre coincide
+	//objDescription: pos, nombre (no tiene el ao)
+	public GameObject parse(String[] objDescription, GameWorld game) throws GameParseException, OffBoardException{
+		if(objDescription.length < 2) throw new GameParseException(); //FORMATO INVALIDO
+		//ESTE IF DE ARRIBA NO HARÍA FALTA
+		
+		//if(objDescription.length >= 2 && matchName(objDescription[1])){ //parsea el objeto si la longitud es de dos o más, y si el nombre coincide
+		if (matchName(objDescription[1])) {	
+			try {
 			Position userPos = Position.parsePos(objDescription); //parse de la posición (convierte un String en Position)
 			if(userPos != null) { //es null cuando la posición no es válida
 				return createObject(game, userPos);
 			}
+			}
+			catch (PositionParseException pExc) {throw new GameParseException(Messages.INVALID_OBJ_POS.formatted(String.join(" ", objDescription)), pExc); //POSICIÓN MAL ESCRITA}
+			//NO SE CATCHEA LA OFFBOARD EXCEPTION, SIMPLEMENTE LA LANZA (
+			}
 		}
-		return null;
+		return null; //SI DEVUELVE NULL ES PORQUE EL OBJETO NO CONCORDABA CON EL NOMBRE (LO GESTIONA EL FACTORY) -> NO DA NULL SI HAY ERROR
+	}
+	
+	@Override
+	public String toString() {
+		String p = pos.toString() + " ";
+		return p + getName();
 	}
 }
