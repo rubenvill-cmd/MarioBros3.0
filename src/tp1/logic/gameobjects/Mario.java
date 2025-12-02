@@ -1,5 +1,8 @@
 package tp1.logic.gameobjects;
 
+import tp1.exceptions.GameParseException;
+import tp1.exceptions.ObjectParseException;
+import tp1.exceptions.OffBoardException;
 import tp1.logic.Action;
 import tp1.logic.ActionList;
 import tp1.view.Messages;
@@ -18,7 +21,7 @@ public class Mario extends MovingObject{
 		super(game, pos);
 		act = defaultAct();
 		actList = new ActionList(); 
-		big = true;
+		big = defaultSize();
 		isRising = false;
 		posIfBig(); //aqui te crea la posición grande de mario
 	}
@@ -31,6 +34,9 @@ public class Mario extends MovingObject{
 	@Override
 	protected Action defaultAct() {
 		return Action.RIGHT;
+	}
+	private boolean defaultSize() {
+		return true;
 	}
 	
 	@Override	
@@ -269,21 +275,43 @@ public class Mario extends MovingObject{
 	
 	
 	@Override // ao (1,2) M R B
-	public Mario parse(String[] objectDescription, GameWorld game) {
-		GameObject go = super.parse(objectDescription, game); //parsea la posicion, el nombre y la acción
+	public Mario parse(String[] objectDescription, GameWorld game) throws ObjectParseException, OffBoardException {
+		try {
+		GameObject go = super.parse(objectDescription, game); //parsea la posicion, el nombre y la acción //ESTO PUEDE LANZAR EXCEPCIONES DE ACTIN, POSITION Y OFFBOARD
 		if (go!= null) {
 			Mario mario = (Mario)go; //si el objeto no es nulo, es un Mario
 			
-			//parse del estado
+			if (objectDescription.length > 4) {
+				throw new ObjectParseException(Messages.COMMAND_ADDOBJECT_ERROR.formatted(String.join(" ", objectDescription)));
+			}
 			if (objectDescription.length == 4) {
+				//parse del tamaño
+				
 				String strState = objectDescription[3].toUpperCase();
 				if(strState.equals(Messages.STATE_SMALL) || strState.equals(Messages.STATE_SMALL_SHORTCUT)) {
 					mario.big = false;
 				}
-				//si no se especifica, se pone el valor por defecto
+				else if (strState.equals(Messages.STATE_BIG) || strState.equals(Messages.STATE_BIG_SHORTCUT)) {
+					mario.big = true;
+				}
+				else throw new GameParseException(Messages.COMMAND_ADDOBJECT_ERROR.formatted(String.join(" ", objectDescription))); //INVALID MARIO SIZEE
 			}
+			//si el tamaño era menor a 4 (no se especifica el tamaño) se pone por defecto
 			return mario;
 		}
+		}
+		catch (GameParseException e){
+			throw new ObjectParseException(e);
+		}
 		return null;
+	}
+	
+	@Override
+	public String toString() {
+		String posNameAct = super.toString() + " ";
+		String size;
+		if (big) size = Messages.STATE_BIG;
+		else size = Messages.STATE_SMALL;
+		return posNameAct + size;
 	}
 }

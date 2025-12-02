@@ -9,6 +9,15 @@ import tp1.logic.gameobjects.GameObjectFactory;
 import tp1.logic.gameobjects.Goomba;
 import tp1.logic.gameobjects.Mario;
 import tp1.view.Messages;
+
+import java.io.FileWriter;
+import java.io.Writer;
+import java.io.IOException;
+
+import tp1.exceptions.GameModelException;
+import tp1.exceptions.GameParseException;
+import tp1.exceptions.ObjectParseException;
+import tp1.exceptions.OffBoardException;
 import tp1.logic.GameInterfaces.GameModel;
 import tp1.logic.GameInterfaces.GameStatus;
 import tp1.logic.GameInterfaces.GameWorld;
@@ -95,11 +104,11 @@ public class Game implements GameModel, GameStatus, GameWorld{
 	}
 		//ADD OBJECT EN LA OBJECTCONTAINER LIST.
 	@Override
-	public GameObject addGameObject(String[] objWords) {
+	public GameObject addGameObject(String[] objWords) throws ObjectParseException, OffBoardException{
 		//1º Creamos un Mario temporal en el caso que no exista (inItLevelBlank)
 		Mario tempMario = new Mario();
 		//2º Verificamos si el usuario quiere añadir un nuevo Mario, ya que su adición al juego se hace de forma diferente.
-		Mario newMario = tempMario.parse(objWords, this);
+		Mario newMario = tempMario.parse(objWords, this); //ESTO DEBERÍA DE LANZAR DIRECTAMENTE LA OBJECT PARSE EXCEPTION
 		GameObject newObject;
 		
 		if (newMario != null) {
@@ -113,10 +122,10 @@ public class Game implements GameModel, GameStatus, GameWorld{
 		if (newObject != null) {
 			gameObjects.add(newObject);
 			return newObject;
-		} else {
-			return null;
-		}
-
+		} 
+		//else {
+			return null; //QUE PASA SI RETURNEA NULL???
+		//}*/
 	}
 	//el parse de mario se llama con el mario, primero se comprueba si ya hay un mario en el juego, si lo hay
 	//ese mario se tiene que eliminar de la lista de objetos
@@ -128,6 +137,27 @@ public class Game implements GameModel, GameStatus, GameWorld{
 		//3.2º Halla existido o no this.mario, le asignamos un nuevo mario y se lo returneamos addObjectCommand.
 		this.mario = newMario;
 	}
+	@Override
+	public void save(String fileName) throws GameModelException {
+		try (Writer out = new FileWriter(fileName)){ //prueba si se puede abrir/crear el fichero
+			out.write(this.stringify() + Messages.LINE_SEPARATOR);
+			out.write(gameObjects.toString());
+		}
+		catch (IOException e) {
+			throw new GameModelException(e);
+		}
+	}
+	//STRINGIFY PARA EL SAVECOMMAND
+		//NO SE SI FUNCIONA ASI EL TRANSFORMAR ENTEROS EN STRING
+	private String stringify() {
+		String t = Integer.toString(remainingTime) + " ";
+		String p = Integer.toString(points) + " ";
+		String l = Integer.toString(lifes) + " ";
+		return t + p + l;
+	}
+	
+	
+	
 	
 	
 	//MÉTODOS DE GAMESTATUS
