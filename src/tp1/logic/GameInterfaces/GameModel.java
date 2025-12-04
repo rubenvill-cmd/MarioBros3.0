@@ -1,6 +1,7 @@
 package tp1.logic.GameInterfaces;
 import tp1.exceptions.GameLoadException;
 import tp1.exceptions.GameModelException;
+import tp1.exceptions.GameParseException;
 import tp1.exceptions.ObjectParseException;
 import tp1.exceptions.OffBoardException;
 import tp1.logic.Action;
@@ -13,7 +14,7 @@ public interface GameModel {
 	public void resetGame();
 	public void exit();
 	public void addAction(Action act);
-	public GameObject addGameObject(String[] objWords) throws ObjectParseException, OffBoardException;
+	public GameObject addGameObject(String[] objWords) throws GameParseException, OffBoardException;
 	public void save(String fileName) throws GameModelException;
 	public void load(String fileName) throws GameLoadException;
 }

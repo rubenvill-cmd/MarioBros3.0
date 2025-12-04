@@ -116,5 +116,9 @@ public class GameObjectContainer {
 		}
 		return str.toString();
 	}
+
+	protected void add(int i, GameObject obj) {
+		this.objects.add(i, obj);
+	}
 	
 }
