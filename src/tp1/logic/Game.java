@@ -9,6 +9,17 @@ import tp1.logic.gameobjects.GameObjectFactory;
 import tp1.logic.gameobjects.Goomba;
 import tp1.logic.gameobjects.Mario;
 import tp1.view.Messages;
+
+import java.io.FileWriter;
+import java.io.Writer;
+import java.io.IOException;
+
+import tp1.exceptions.GameLoadException;
+import tp1.exceptions.GameModelException;
+import tp1.exceptions.GameParseException;
+import tp1.exceptions.ObjectParseException;
+import tp1.exceptions.OffBoardException;
+import tp1.logic.GameInterfaces.GameConfiguration;
 import tp1.logic.GameInterfaces.GameModel;
 import tp1.logic.GameInterfaces.GameStatus;
 import tp1.logic.GameInterfaces.GameWorld;
@@ -17,6 +28,7 @@ import tp1.logic.GameInterfaces.GameWorld;
 public class Game implements GameModel, GameStatus, GameWorld{
 	
 	//Atributos
+	private GameConfiguration fileLoader;//Guardamos el nivel cargado de las files, polimorfismo
 	private GameObjectContainer gameObjects;
 	private Mario mario;
 	private int nLevel; 
@@ -33,6 +45,7 @@ public class Game implements GameModel, GameStatus, GameWorld{
 	
 	//CONSTRUCTORA
 	public Game(int nLevel) { //se pasa al Game el nivel desde los argumentos que le pasamos al compilador.
+		this.fileLoader = null;
 		this.nLevel = nLevel;
 		this.points = 0;
 		this.lifes = 3;
@@ -45,7 +58,6 @@ public class Game implements GameModel, GameStatus, GameWorld{
 		else if (nLevel == 1) initLevel1();
 		else if (nLevel == 2) initLevel2();
 		else if(nLevel == -1) initLevelBlank();
-		
 	}
 	
 	//MÉTODOS DE GAMEMODEL
@@ -58,22 +70,25 @@ public class Game implements GameModel, GameStatus, GameWorld{
 	
 		//RESET DEL JUEGO
 	@Override
-	public void resetGame() { //reinicio del juego actual con this.nlevel.
-		if(this.nLevel == 0) initLevel0();
-		else if(this.nLevel == 1) initLevel1();
-		else if (nLevel == 2) initLevel2();
-		else if(this.nLevel == -1) initLevelBlank();
+	public void resetGame(){ //reinicio del juego actual con this.nlevel.
+		if(fileLoader != null) loadGame(fileLoader);
+		else {
+			if(this.nLevel == 0) initLevel0();
+			else if(this.nLevel == 1) initLevel1();
+			else if (nLevel == 2) initLevel2();
+			else if(this.nLevel == -1) initLevelBlank();
+		}
 	}
 	@Override
 	public void resetGame(int newLevel) { //reinicio del nivel que solicita el usuario con el número de nivel.
 		this.nLevel = newLevel;
+		this.fileLoader = null; //Limpiamos la referencia antigua al nivel leído ya que el último nivel en leerse no va a ser ese.
 		
 		if(newLevel == 0) initLevel0();
 		else if(newLevel == 1) initLevel1();
 		else if (newLevel == 2) initLevel2();
 		else if (newLevel == -1)initLevelBlank();
 	}
-	
 		//UPDATE EL JUEGO
 	@Override
 	public void update() {
@@ -95,11 +110,11 @@ public class Game implements GameModel, GameStatus, GameWorld{
 	}
 		//ADD OBJECT EN LA OBJECTCONTAINER LIST.
 	@Override
-	public GameObject addGameObject(String[] objWords) {
+	public GameObject addGameObject(String[] objWords) throws ObjectParseException, OffBoardException{
 		//1º Creamos un Mario temporal en el caso que no exista (inItLevelBlank)
 		Mario tempMario = new Mario();
 		//2º Verificamos si el usuario quiere añadir un nuevo Mario, ya que su adición al juego se hace de forma diferente.
-		Mario newMario = tempMario.parse(objWords, this);
+		Mario newMario = tempMario.parse(objWords, this); //ESTO DEBERÍA DE LANZAR DIRECTAMENTE LA OBJECT PARSE EXCEPTION
 		GameObject newObject;
 		
 		if (newMario != null) {
@@ -113,10 +128,10 @@ public class Game implements GameModel, GameStatus, GameWorld{
 		if (newObject != null) {
 			gameObjects.add(newObject);
 			return newObject;
-		} else {
-			return null;
-		}
-
+		} 
+		//else {
+			return null; //QUE PASA SI RETURNEA NULL???
+		//}*/
 	}
 	//el parse de mario se llama con el mario, primero se comprueba si ya hay un mario en el juego, si lo hay
 	//ese mario se tiene que eliminar de la lista de objetos
@@ -128,6 +143,80 @@ public class Game implements GameModel, GameStatus, GameWorld{
 		//3.2º Halla existido o no this.mario, le asignamos un nuevo mario y se lo returneamos addObjectCommand.
 		this.mario = newMario;
 	}
+	@Override
+	public void save(String fileName) throws GameModelException {
+		try (Writer out = new FileWriter(fileName)){ //prueba si se puede abrir/crear el fichero
+			out.write(this.stringify() + Messages.LINE_SEPARATOR);
+			out.write(gameObjects.toString());
+		}
+		catch (IOException e) {
+			throw new GameModelException(e);
+		}
+	}
+	private String stringify() {
+		String t = Integer.toString(remainingTime) + " ";
+		String p = Integer.toString(points) + " ";
+		String l = Integer.toString(lifes) + " ";
+		return t + p + l;
+	}
+	/*
+	@Override
+	public void load(String fileName) throws GameLoadException {
+		//try {
+		GameConfiguration config = new FileGameConfiguration(fileName, this);
+		this.fileLoader = config; //Guardamos la referencia para el reset.
+		resetFromConfiguration(config);
+		//} catch (GameLoadException e) {
+			//Controlar excepción de unknown file name
+		//}
+	}
+	*/
+	
+	public void load(String fileName) throws GameLoadException {
+		GameConfiguration loadGame = new FileGameConfiguration(fileName, this);
+		this.fileLoader = loadGame;
+		loadGameConfig(loadGame);
+	}
+	
+	public void loadGameConfig(GameConfiguration config){
+		this.gameObjects = new GameObjectContainer();
+		this.remainingTime = config.getRemainingTime();
+		this.points = config.points();
+		this.lifes = config.numLives();
+		this.exitedDoor = false;
+		this.exitRequested = false;
+		
+		this.mario = new Mario(config.getMario());
+		
+		gameObjects.add(this.mario);
+		
+		for(GameObject obj : config.getNPCObjects()) {
+			GameObject objCopy = obj.copy();
+			gameObjects.add(objCopy);
+		}
+	}
+	
+	private void loadGame(GameConfiguration config) {
+		this.gameObjects = new GameObjectContainer();
+		this.exitedDoor = false;
+		this.exitRequested = false;
+		
+		this.mario = new Mario(config.getMario());
+		
+		gameObjects.add(this.mario);
+		
+		for(GameObject obj : config.getNPCObjects()) {
+			GameObject objCopy = obj.copy();
+			gameObjects.add(objCopy);
+		}
+	}
+	
+	
+	//STRINGIFY PARA EL SAVECOMMAND
+		//NO SE SI FUNCIONA ASI EL TRANSFORMAR ENTEROS EN STRING
+	
+	
+	
 	
 	
 	//MÉTODOS DE GAMESTATUS
@@ -173,7 +262,7 @@ public class Game implements GameModel, GameStatus, GameWorld{
 		return gameObjects.isPosSolid(pos); //Pregunta a los objetos si en una posición dada se encuentra un objeto sólido.
 	}
 	@Override
-	public void marioDies() {
+	public void marioDies(){
 		lifes--; //Si mario muere ya sea si le ha matado goomba o si ha salido del tablero, le quitamos una vida y reiniciamos.
 		if (lifes != 0) resetGame();
 	}
@@ -246,6 +335,40 @@ public class Game implements GameModel, GameStatus, GameWorld{
 
 		gameObjects.add(new Goomba(this, new Position(0, 19)));
 	}
+	/*
+	private void initLevel1() {
+		this.nLevel = 1;
+		this.remainingTime = 100;
+		
+		// 1. Mapa
+		gameObjects = new GameObjectContainer();
+		gameObjects.add(new Land(this, new Position(9,2)));
+		gameObjects.add(new Land(this, new Position(9,5)));
+		gameObjects.add(new Land(this, new Position(9,6)));
+		gameObjects.add(new Land(this, new Position(9,7)));
+		gameObjects.add(new Land(this, new Position(5,6)));
+		//gameObjects.add(new Land(new Position(11,2))); //QUITAR
+		
+		// Salto final
+		int tamX = 8, tamY= 8;
+		int posIniX = Game.DIM_X-3-tamX, posIniY = Game.DIM_Y-3;
+
+
+		gameObjects.add(new ExitDoor(this, new Position(Game.DIM_Y-3, Game.DIM_X-1)));
+
+		// 3. Personajes
+		this.mario = new Mario(this, new Position(Game.DIM_Y-3, 0)); //(Game.DIM_Y-3, 0)
+		gameObjects.add(this.mario);
+
+		gameObjects.add(new Goomba(this, new Position(12, 6)));
+		gameObjects.add(new Goomba(this, new Position(12, 8)));
+		gameObjects.add(new Goomba(this, new Position(10, 10)));
+		gameObjects.add(new Goomba(this, new Position(12, 11)));
+		gameObjects.add(new Goomba(this, new Position(12, 14)));
+		gameObjects.add(new Goomba(this, new Position(0, 19)));
+		gameObjects.add(new Goomba(this, new Position(4, 6)));
+	}
+	*/
 	
 	private void initLevel1() {
 		this.nLevel = 1;
@@ -296,7 +419,7 @@ public class Game implements GameModel, GameStatus, GameWorld{
 		gameObjects.add(new Goomba(this, new Position(0, 19)));
 		gameObjects.add(new Goomba(this, new Position(4, 6)));
 	}
-	
+
 	private void initLevel2() {
 		this.nLevel = 2;
 		this.remainingTime = 100;

@@ -1,4 +1,5 @@
 package tp1.logic.GameInterfaces;
+import tp1.exceptions.GameLoadException;
 import tp1.logic.Position;
 import tp1.logic.gameobjects.GameItem;
 import tp1.logic.gameobjects.GameObject;

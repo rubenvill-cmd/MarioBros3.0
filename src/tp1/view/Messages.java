@@ -43,6 +43,10 @@ public class Messages {
 	public static final String LINE = "%s" + LINE_SEPARATOR;
 	public static final String LINE_TAB = TAB + LINE;
 	public static final String LINE_2TABS = TAB + LINE_TAB;
+	// FileGameConfiguration
+	public static final String FILEGAMECONFIGURATION_NOT_FOUND = "File not found: \"%s\"";
+	public static final String FILEGAMECONFIGURATION_INCORRECT_GAME_STATUS = "Incorrect game status \"%s\"";
+	public static final String FILEGAMECONFIGURATION_INVALID_FILE_CONFIG = "Invalid file \"%s\" configuration";
 
 //Commands
 	// Errores de factorías:
@@ -109,7 +113,33 @@ public class Messages {
 	public static final String COMMAND_ADDOBJECT_DETAILS = "[a]dd[O]bject <object_description>";
 	public static final String COMMAND_ADDOBJECT_HELP = "adds to the board the object given by object_description.";
 	public static final String COMMAND_ADDOBJECT_EXECUTION_EXAMPLE = "<object_description> = (col,row) objName [dir [BIG|SMALL]]. Ej. (12,3) Mario LEFT SMALL";
-	public static final String COMMAND_ADDOBJECT_ERROR = "Object parse error, too much args: '%s'"; //!
+	public static final String COMMAND_ADDOBJECT_ERROR = "Object parse error, too much args: \"%s\""; //!
+	public static final String COMMAND_ADDOBJECT_FORMAT_ERROR = "Incorrect format";
+	
+	//SAVECOMMAND
+	public static final String COMMAND_SAVE_NAME = "save";
+	public static final String COMMAND_SAVE_SHORTCUT = "s";
+	public static final String COMMAND_SAVE_DETAILS = "[s]ave <fileName>";
+	public static final String COMMAND_SAVE_HELP = "save the actual configuration in text file <fileName>";
+	public static final String COMMAND_SAVE_ERROR = "Cannot save game in file";
+	public static final String COMMAND_SAVE_CORRECT = TAB + "File \"%s\" correctly saved" + LINE_SEPARATOR;
+	
+	// LOADCOMMAND
+	public static final String COMMAND_LOAD_NAME = "load";
+	public static final String COMMAND_LOAD_SHORTCUT = "l";
+	public static final String COMMAND_LOAD_DETAILS = "[l]oad <fileName>";
+	public static final String COMMAND_LOAD_HELP = "load the game configuration from text file <fileName>";
+	public static final String COMMAND_LOAD_UNKNOWN_FILE = "Unable to load game configuration from file \"%s\"";
+	
+	//GAMEMODEL EXCEPTIONS
+	public static final String POS_OFFBOARD = "Object position is off board: \"%s\"";
+	public static final String INVALID_OBJ_POS = "Invalid object position: \"%s\"";
+	public static final String INVALID_POS = "Invalid position: \"%s\"";
+	public static final String UNKNOWN_DIR = "Unknown moving object direction: \"%s\"";
+	public static final String INVALID_DIR = "Unknown action: '%s'";
+	public static final String UNKNOWN_OBJECT = "Unknown game object: \"%s\"";
+	public static final String INVALID_BOX_STATUS = "Invalid Box status: \"%s\"";
+	public static final String INVALID_MARIO_SIZE = "Invalid Mario size: \"%s\"";
 	
 	//GAMEOBJECTS
 	
@@ -147,6 +177,10 @@ public class Messages {
 	public static final String STATE_BIG_SHORTCUT = "B";
 	public static final String STATE_SMALL = "SMALL";
 	public static final String STATE_SMALL_SHORTCUT = "S";
+	public static final String STATE_BOX_FULL = "FULL";
+	public static final String STATE_BOX_FULL_SHORTCUT = "F";
+	public static final String STATE_BOX_EMPTY = "EMPTY";
+	public static final String STATE_BOX_EMPTY_SHORTCUT = "E";
 	
 //Symbols
 	public static final String EMPTY = "";

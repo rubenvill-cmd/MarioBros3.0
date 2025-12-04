@@ -1,6 +1,6 @@
 package tp1.control.commands;
 
-import tp1.control.commands.exceptions.CommandParseException;
+import tp1.exceptions.CommandParseException;
 import tp1.logic.GameInterfaces.GameModel;
 import tp1.view.Messages;
 import tp1.view.GameView;

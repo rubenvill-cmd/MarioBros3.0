@@ -1,6 +1,7 @@
 package tp1.logic.gameobjects;
 
-import tp1.control.commands.exceptions.CommandExecuteException;
+import tp1.exceptions.GameParseException;
+import tp1.exceptions.OffBoardException;
 import tp1.logic.Position;
 import tp1.logic.GameInterfaces.GameWorld;
 import tp1.view.Messages;
@@ -13,6 +14,14 @@ public class Land extends GameObject{
 	}
 	public Land() { //Constructora sin parámetros para la lista availableObjects.
 		super(null, new Position(0,0));
+	}
+	public Land(Land other) {
+		super(other);
+	}
+	
+	@Override
+	public GameObject copy() {
+		return new Land(this);
 	}
 	
 	@Override
@@ -83,5 +92,16 @@ public class Land extends GameObject{
 	@Override
 	protected GameObject createObject(GameWorld game, Position pos) {
 		return new Land(game, pos);
+	}
+	
+	@Override
+	public GameObject parse(String[] objDescription, GameWorld game) throws GameParseException, OffBoardException{
+		GameObject obj = super.parse(objDescription, game);
+		if (obj != null) {
+			if (objDescription.length > 2) {
+				throw new GameParseException(Messages.COMMAND_ADDOBJECT_ERROR.formatted(String.join(" ", objDescription)));
+			}
+		}
+		return obj;
 	}
 }

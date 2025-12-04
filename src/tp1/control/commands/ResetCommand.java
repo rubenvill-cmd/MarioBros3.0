@@ -1,6 +1,7 @@
 package tp1.control.commands;
-import tp1.control.commands.exceptions.CommandExecuteException;
-import tp1.control.commands.exceptions.CommandParseException;
+import tp1.exceptions.CommandExecuteException;
+import tp1.exceptions.CommandParseException;
+import tp1.exceptions.GameLoadException;
 import tp1.logic.GameInterfaces.GameModel;
 import tp1.view.GameView;
 import tp1.view.Messages;
@@ -40,8 +41,8 @@ public class ResetCommand extends AbstractCommand{
 				throw new CommandExecuteException(Messages.INVALID_LEVEL_NUMBER);
 		}
 		else {
-		game.resetGame();
-		view.showGame();
+			game.resetGame();
+			view.showGame();
 		}
 	}
 
