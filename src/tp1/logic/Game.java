@@ -110,8 +110,9 @@ public class Game implements GameModel, GameStatus, GameWorld{
 	}
 		//ADD OBJECT EN LA OBJECTCONTAINER LIST.
 	@Override
-	public GameObject addGameObject(String[] objWords) throws ObjectParseException, OffBoardException{
+	public GameObject addGameObject(String[] objWords) throws GameParseException, OffBoardException{
 		//1º Creamos un Mario temporal en el caso que no exista (inItLevelBlank)
+		//try {
 		Mario tempMario = new Mario();
 		//2º Verificamos si el usuario quiere añadir un nuevo Mario, ya que su adición al juego se hace de forma diferente.
 		Mario newMario = tempMario.parse(objWords, this); //ESTO DEBERÍA DE LANZAR DIRECTAMENTE LA OBJECT PARSE EXCEPTION
@@ -121,18 +122,31 @@ public class Game implements GameModel, GameStatus, GameWorld{
 			//3º Si vamos a añadir un Mario, entonces llamamos a esta función
 			changeMario(newMario);
 			newObject = newMario;
-			} else {
-				//4º Si realmente el usuario no quería añadir un Mario, llamamos al parse de los demás objetos.
-				newObject = GameObjectFactory.parse(objWords, this);
+			add(0, newObject);
+			return newObject;
+		}
+		else {
+			//4º Si realmente el usuario no quería añadir un Mario, llamamos al parse de los demás objetos.
+			newObject = GameObjectFactory.parse(objWords, this);
+			if (newObject != null) {
+				gameObjects.add(newObject);
+				return newObject;
 			}
-		if (newObject != null) {
+		}
+		/*if (newObject != null) {
 			gameObjects.add(newObject);
 			return newObject;
-		} 
+		}*/
+		//}
+		//catch (GameParseException e) {throw new ObjectParseException(e);}
 		//else {
-			return null; //QUE PASA SI RETURNEA NULL???
+			return null; //QUE PASA SI RETURNEA NULL??? -> entonces lanza una excepcion
 		//}*/
 	}
+	private void add(int i, GameObject obj) {
+		gameObjects.add(i, obj);
+	}
+	
 	//el parse de mario se llama con el mario, primero se comprueba si ya hay un mario en el juego, si lo hay
 	//ese mario se tiene que eliminar de la lista de objetos
 	private void changeMario(Mario newMario) {
@@ -143,6 +157,8 @@ public class Game implements GameModel, GameStatus, GameWorld{
 		//3.2º Halla existido o no this.mario, le asignamos un nuevo mario y se lo returneamos addObjectCommand.
 		this.mario = newMario;
 	}
+	
+	
 	@Override
 	public void save(String fileName) throws GameModelException {
 		try (Writer out = new FileWriter(fileName)){ //prueba si se puede abrir/crear el fichero
@@ -179,11 +195,11 @@ public class Game implements GameModel, GameStatus, GameWorld{
 	}
 	
 	public void loadGameConfig(GameConfiguration config){
-		this.gameObjects = new GameObjectContainer();
-		this.remainingTime = config.getRemainingTime();
+		//this.gameObjects = new GameObjectContainer();
+		//this.remainingTime = config.getRemainingTime();
 		this.points = config.points();
 		this.lifes = config.numLives();
-		this.exitedDoor = false;
+		/*this.exitedDoor = false;
 		this.exitRequested = false;
 		
 		this.mario = new Mario(config.getMario());
@@ -193,10 +209,11 @@ public class Game implements GameModel, GameStatus, GameWorld{
 		for(GameObject obj : config.getNPCObjects()) {
 			GameObject objCopy = obj.copy();
 			gameObjects.add(objCopy);
-		}
+		}*/
+		loadGame(config);
 	}
-	
 	private void loadGame(GameConfiguration config) {
+		this.remainingTime = config.getRemainingTime();
 		this.gameObjects = new GameObjectContainer();
 		this.exitedDoor = false;
 		this.exitRequested = false;

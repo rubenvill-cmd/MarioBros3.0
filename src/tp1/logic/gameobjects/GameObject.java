@@ -104,8 +104,6 @@ public abstract class GameObject implements GameItem{
 	//parse de la posición y el nombre
 	//objDescription: pos, nombre (no tiene el ao)
 	public GameObject parse(String[] objDescription, GameWorld game) throws GameParseException, OffBoardException{
-		//if(objDescription.length < 2) throw new GameParseException(Messages.COMMAND_ADDOBJECT_FORMAT_ERROR); //FORMATO INVALIDO
-		//ESTE IF DE ARRIBA NO HARÍA FALTA (Efectivamente no hacía falta)
 		
 		//if(objDescription.length >= 2 && matchName(objDescription[1])){ //parsea el objeto si la longitud es de dos o más, y si el nombre coincide
 		if (matchName(objDescription[1])) {	
@@ -115,7 +113,8 @@ public abstract class GameObject implements GameItem{
 				return createObject(game, userPos);
 			}
 			}
-			catch (PositionParseException pExc) {throw new GameParseException(Messages.INVALID_OBJ_POS.formatted(String.join(" ", objDescription)), pExc); //POSICIÓN MAL ESCRITA}
+			catch (PositionParseException pExc) {
+				throw new GameParseException(Messages.INVALID_OBJ_POS.formatted(String.join(" ", objDescription)), pExc); //POSICIÓN MAL ESCRITA}
 			//NO SE CATCHEA LA OFFBOARD EXCEPTION, SIMPLEMENTE LA LANZA (
 			}
 		}

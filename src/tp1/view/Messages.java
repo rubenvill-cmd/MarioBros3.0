@@ -135,10 +135,11 @@ public class Messages {
 	public static final String POS_OFFBOARD = "Object position is off board: \"%s\"";
 	public static final String INVALID_OBJ_POS = "Invalid object position: \"%s\"";
 	public static final String INVALID_POS = "Invalid position: \"%s\"";
-	public static final String UNKNOWN_DIR = "Unknown moving object direction: \"%s\"";
-	public static final String INVALID_DIR = "Unknown action: '%s'";
+	public static final String UNKNOWN_OBJ_DIR = "Unknown moving object direction: \"%s\"";
+	public static final String INVALID_ACT = "Invalid moving object direction: \"%s\""; 
+	public static final String UNKNOWN_ACT = "Unknown action: \"%s\"";
 	public static final String UNKNOWN_OBJECT = "Unknown game object: \"%s\"";
-	public static final String INVALID_BOX_STATUS = "Invalid Box status: \"%s\"";
+	public static final String INVALID_BOX_STATUS = " Invalid Box status: \"%s\"";
 	public static final String INVALID_MARIO_SIZE = "Invalid Mario size: \"%s\"";
 	
 	//GAMEOBJECTS

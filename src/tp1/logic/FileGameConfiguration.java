@@ -36,7 +36,7 @@ public class FileGameConfiguration implements GameConfiguration{
 		catch (NumberFormatException e) {
 			throw new GameLoadException(Messages.INVALID_POS, e);
 		}
-		catch (ObjectParseException e) {
+		catch (GameParseException e) {
 			throw new GameLoadException(Messages.FILEGAMECONFIGURATION_INVALID_FILE_CONFIG.formatted(fileName)/*+ e.getMessage()*/, e);
 		}
 		catch (OffBoardException e) {
@@ -72,7 +72,7 @@ public class FileGameConfiguration implements GameConfiguration{
 	}
 	
 	
-	private void readGameObjects(BufferedReader in, GameWorld game) throws GameLoadException, IOException, ObjectParseException, OffBoardException{
+	private void readGameObjects(BufferedReader in, GameWorld game) throws GameLoadException, IOException, GameParseException, OffBoardException{
 		String[] words = null;
 		//try {
 			String line = in.readLine();
@@ -100,7 +100,7 @@ public class FileGameConfiguration implements GameConfiguration{
 				line = in.readLine();
 			}
 		//}
-		//catch (GameParseException e) { throw new ObjectParseException(e.getMessage());}	
+		//catch (GameParseException e) { throw new ObjectParseException(e);}	
 	}
 	
 	@Override

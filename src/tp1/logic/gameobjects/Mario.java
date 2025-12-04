@@ -287,8 +287,8 @@ public class Mario extends MovingObject{
 	
 	
 	@Override // ao (1,2) M R B
-	public Mario parse(String[] objectDescription, GameWorld game) throws ObjectParseException, OffBoardException {
-		try {
+	public Mario parse(String[] objectDescription, GameWorld game) throws GameParseException, OffBoardException {
+		//try {
 		GameObject go = super.parse(objectDescription, game); //parsea la posicion, el nombre y la acción //ESTO PUEDE LANZAR EXCEPCIONES DE ACTIN, POSITION Y OFFBOARD
 		if (go!= null) {
 			Mario mario = (Mario)go; //si el objeto no es nulo, es un Mario
@@ -311,10 +311,10 @@ public class Mario extends MovingObject{
 			//si el tamaño era menor a 4 (no se especifica el tamaño) se pone por defecto
 			return mario;
 		}
-		}
-		catch (GameParseException e){
-			throw new ObjectParseException(e);
-		}
+		//}
+		//catch (GameParseException e){
+		//	throw new ObjectParseException("", e);
+		//}
 		return null;
 	}
 	

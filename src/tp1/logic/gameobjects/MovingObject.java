@@ -82,6 +82,9 @@ public abstract class MovingObject extends GameObject {
 					Action a = Action.parseAction(objectDescription); //SI EL OBJETO DA NULL, VA A SALTAR EXCEPCION, Y SI NO HAY OTRA LETRA, SE PONE LA ACT AUTOMATICA
 					//if (a != null) {
 						obj.act = a;
+						if (!isValidAction(a)) {
+							throw new GameParseException(Messages.INVALID_ACT.formatted(String.join(" ", objectDescription)));
+						}
 						//}
 						return obj; //devuelve el objeto parseado (posición, nombre, acción)
 				}
@@ -89,13 +92,16 @@ public abstract class MovingObject extends GameObject {
 				return obj; //devuelve el objeto parseado (posición, nombre, accion por defecto)
 			}
 			catch (ActionParseException aExc) {
-				throw new GameParseException(Messages.UNKNOWN_DIR.formatted(String.join(" ", objectDescription)), aExc);
+				throw new GameParseException(Messages.UNKNOWN_OBJ_DIR.formatted(String.join(" ", objectDescription)), aExc);
 			}
 		}
 		//NO CATCHEAMOS EL OFFBOARDEXCEPTION NI EL POSITIONEXCEPTION PQ CREO QUE NO HACEMOS NADA CON ELLA, SOLO LA LANZAMOS
 		//TENEMOS QUE HACER TAMBIEN LA DE OBJECTPARSEEXCEPTION????
 		
 		return null; //NO SE SI HAY QUE PONER EL RETURN NULL (creo que si pq si es null es pq no se ha matcheado el Name)
+	}
+	private boolean isValidAction(Action a) {
+		return a == Action.RIGHT || a == Action.LEFT || a == Action.STOP ;
 	}
 	
 	@Override

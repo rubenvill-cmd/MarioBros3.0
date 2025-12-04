@@ -32,12 +32,12 @@ public class AddObjectCommand extends AbstractCommand{
 			
 		} catch (GameModelException e) {
 			//throw new CommandExecuteException(Messages.ERROR_COMMAND_EXECUTE, e);
-			 if (e.getCause() != null) {
+			 /*if (e.getCause() != null) {
 				 throw new CommandExecuteException(Messages.ERROR_COMMAND_EXECUTE, e.getCause());
 		     } 
-			 else {
+			 else {*/
 				 throw new CommandExecuteException(Messages.ERROR_COMMAND_EXECUTE, e);
-		     }
+		     //}
 			//Aquí tiene que devolver problema del parse de este objeto por muchos argumentos
 			//Posición fuera de la board etc.
 		}
