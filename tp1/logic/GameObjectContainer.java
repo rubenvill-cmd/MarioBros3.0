@@ -1,0 +1,124 @@
+package tp1.logic;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import tp1.logic.gameobjects.GameItem;
+import tp1.logic.gameobjects.GameObject;
+import tp1.view.Messages;
+
+public class GameObjectContainer {
+	private List<GameObject> objects; //Lista que contiene todos los objetos del juego, comienza incluyendo los objetos iniciales.
+	private List<GameObject> newObjects;//Contiene los objetos que se añaden durante el update. Por ejemplo, el Mushroom
+										//cuando sale del box. Es una lista auxiliar.(No podemos añadir estos objetos durante el update a la lista
+										//objects) porque cambiamos el tamaño de la lista inesperadamente.
+
+	//CONSTRUCTORA
+	public GameObjectContainer() {
+		objects = new ArrayList<GameObject>();
+		newObjects = new ArrayList<GameObject>();
+	}
+	
+
+	//Añadimos un objeto a la lista de objetos principal.
+	public void add(GameObject object) {
+		this.objects.add(object);
+	}
+	
+	//Añadimos un objeto a la lista auxiliar de objetos pendientes de añadir
+	public void toAdd(GameObject gameobject) {
+		this.newObjects.add(gameobject);
+	}
+	
+	
+	//UPDATE
+	public void update() {
+		//1. Actualizar todos los objetos existentes
+		for(int i = 0; i < objects.size(); i++) {
+			objects.get(i).update();
+		}
+		
+		//2. Procesar interacciones entre objetos.
+		for(GameObject obj: objects) {
+			doInteraction(obj);
+		}
+		
+		//3. Añadir nuevos objetos que se añaden durante el update
+		for(GameObject obj : newObjects) {
+		    this.objects.add(obj);
+		}
+		newObjects.clear(); //4. limpiar la lista temporal.
+		
+		//5. Eliminar a los objetos muertos.
+		clean();
+	}
+	
+	//Limpia los objetos muertos de la lista
+	private void clean() {
+		for(int i = 0; i < objects.size(); i++) {
+			if (!(objects.get(i).isAlive())) {
+				objects.remove(i);
+				i--; //Al hacerse un resize automático de la lista, tenemos que actualizar el índice para no saltarnos nada.
+			}
+		}
+	}
+	//Quita un objeto específico de la lista principal.
+	public void remove(GameObject object) {
+		for(int i = 0; i < objects.size(); i++) {
+			if (objects.get(i).equals(object)) {
+				objects.remove(i);
+				i--; //como se hace un resize() automaticamente y los elementos se desplazan, hay que volver a chequear la pos i
+			}
+		}
+	}
+	
+	public void doInteraction(GameItem other) {
+		//1. Recorre TODOS los objetos del juego.
+		for (GameObject obj: objects) {
+			//2. Solo si están vivos
+			if (obj.isAlive() && other.isAlive()) {
+				//3. Intenta que interactúen entre sí.
+				obj.doInteraction(other);//En gameObject.
+			}
+		}
+	}
+	
+	//Añade un objeto a la lista en la posición que queremos (lo usamos para que Mario se ponga en la primera posición)
+	protected void add(int i, GameObject obj) {
+		this.objects.add(i, obj);
+	}
+	
+	//POSICIONES
+	public boolean isPosSolid(Position pos) {//verificamos si el objeto en la posición especificada es sólido o no
+		for(GameObject obj : objects) {
+			if (obj.isInPos(pos) && obj.isSolid()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	//imprimimos el icono del objeto en su posición.
+	public String positionToString(Position pos) {
+		StringBuilder posToStr = new StringBuilder();
+		for (GameObject obj : objects) {
+			if (obj != null && obj.isInPos(pos)) {
+				posToStr.append(obj.getIcon());
+			}
+		}
+		
+		return posToStr.toString();
+	}
+	
+	
+	
+	
+	@Override
+	public String toString() {
+		StringBuilder str = new StringBuilder();
+		for (GameObject obj : objects) {
+			str.append(obj.toString()).append(Messages.LINE_SEPARATOR);
+		}
+		return str.toString();
+	}	
+}
