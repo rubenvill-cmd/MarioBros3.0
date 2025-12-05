@@ -5,6 +5,7 @@ import java.util.List;
 
 import tp1.logic.gameobjects.GameItem;
 import tp1.logic.gameobjects.GameObject;
+import tp1.view.Messages;
 
 public class GameObjectContainer {
 	private List<GameObject> objects; //Lista que contiene todos los objetos del juego, comienza incluyendo los objetos iniciales.
@@ -106,4 +107,18 @@ public class GameObjectContainer {
 		
 		return posToStr.toString();
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder str = new StringBuilder();
+		for (GameObject obj : objects) {
+			str.append(obj.toString()).append(Messages.LINE_SEPARATOR);
+		}
+		return str.toString();
+	}
+
+	protected void add(int i, GameObject obj) {
+		this.objects.add(i, obj);
+	}
+	
 }

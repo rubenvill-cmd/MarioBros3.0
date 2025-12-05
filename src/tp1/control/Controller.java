@@ -2,10 +2,9 @@ package tp1.control;
 
 import tp1.control.commands.Command;
 import tp1.control.commands.CommandGenerator;
-import tp1.control.commands.exceptions.CommandException;
+import tp1.exceptions.CommandException;
 import tp1.logic.GameInterfaces.GameModel;
 import tp1.view.GameView;
-import tp1.view.Messages;
 
 public class Controller {
 
@@ -34,9 +33,9 @@ public class Controller {
 					//else 
 						//view.showError(Messages.UNKNOWN_COMMAND.formatted(String.join(" ", words))); //Si no se encuentra, printeamos error.
 				
-			} catch (CommandException someException) { //Si se lanza una excepción de tipo Parse o Execute, la cogemos.
-				view.showError(someException.getMessage()); //Imprimimos el error de la excepción.
-				Throwable cause = someException.getCause(); //Intentamos ir más abajo para identificar la causa.
+			} catch (CommandException e) { //Si se lanza una excepción de tipo Parse o Execute, la cogemos.
+				view.showError(e.getMessage()); //Imprimimos el error de la excepción.
+				Throwable cause = e.getCause(); //Intentamos ir más abajo para identificar la causa.
 				//Aquí Throwable está por encima de Exception.
 				while(cause != null) { //Si realmente existe una causa de la excepción, que sería otra excepción de nivel inferior, más abajo
 					

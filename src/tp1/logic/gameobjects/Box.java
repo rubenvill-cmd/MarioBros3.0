@@ -3,6 +3,8 @@ package tp1.logic.gameobjects;
 import tp1.logic.Position;
 import tp1.logic.GameInterfaces.GameWorld;
 import tp1.view.Messages;
+import tp1.exceptions.GameParseException;
+import tp1.exceptions.OffBoardException;
 import tp1.logic.Action;
 
 public class Box extends GameObject{
@@ -17,7 +19,15 @@ public class Box extends GameObject{
 	public Box() { //Constructora sin parámetros para la lista availableObjects.
 		super(null, new Position(0,0));
 	}
+	public Box(Box other) {
+		super(other);
+		this.full = other.full;
+	}
 	
+	@Override
+	public GameObject copy() {
+		return new Box(this);
+	}
 	
 	@Override
 	public String getIcon() {
@@ -101,5 +111,63 @@ public class Box extends GameObject{
 	protected GameObject createObject(GameWorld game, Position pos) {
 		return new Box(game, pos);
 	}
+	
+	
+	//AYUDA CON EL PARSE DEL BOX PORFA :(
+	@Override
+	public GameObject parse(String[] objectDescription, GameWorld game) throws GameParseException, OffBoardException{
+		GameObject go = super.parse(objectDescription, game); //parsea la posición y el nombre //PUEDE DAR OBJECTPARSE EXC Y POSITIONPARSEEXCEPTION
+		if (go!= null) {
+			Box obj = (Box) go;
+			
+			if(objectDescription.length == 3){ //la descripción contiene acción
+				boolean f = parseBoxState(objectDescription); //SI EL OBJETO DA NULL, VA A SALTAR EXCEPCION, Y SI NO HAY OTRA LETRA, SE PONE LA ACT AUTOMATICA
+				obj.full = f;
+				return obj; //devuelve el objeto parseado (posición, nombre, acción)
+			}
+			else if (objectDescription.length == 2){
+				obj.full = true;
+				return obj;
+			}
+			//else { //tiene más de tres argumentos
+			else throw new GameParseException(Messages.COMMAND_ADDOBJECT_ERROR.formatted(String.join(" ", objectDescription)));
+			//}
+			//return obj; //devuelve el objeto parseado (posición, nombre, accion por defecto)
+			
+			}
+		
+		return null; //NO SE SI HAY QUE PONER EL RETURN NULL (creo que si pq si es null es pq no se ha matcheado el Name)
+	}
+	
+	private boolean parseBoxState(String[] objectDescription) throws GameParseException{
+		String strState = objectDescription[2].toUpperCase();
+		//ME HE INVENTADO LO DE LA CLASE BOOLEAN AYUDA
+		/*Boolean f = strToState(strState);
+		if (f != null) {return f;}*/
+		if (strState.equals(Messages.STATE_BOX_EMPTY) || strState.equals(Messages.STATE_BOX_EMPTY_SHORTCUT)) {
+			return false;
+		}
+		else if (strState.equals(Messages.STATE_BOX_FULL) || strState.equals(Messages.STATE_BOX_FULL_SHORTCUT)) {
+			return true;
+		}
+		else throw new GameParseException(Messages.INVALID_BOX_STATUS.formatted(String.join(" ", objectDescription)));
+	}
+	/*private Boolean strToState(String state) {
+		if (state.equals(Messages.STATE_BOX_EMPTY) || state.equals(Messages.STATE_BOX_EMPTY_SHORTCUT)) {
+			return false;
+		}
+		else if (state.equals(Messages.STATE_BOX_FULL) || state.equals(Messages.STATE_BOX_FULL_SHORTCUT)) {
+			return true;
+		}
+		return null;
+	}*/
+	
+	@Override
+	public String toString() {
+		String posName = super.toString() + " ";
+		String st;
+		if (full) st = Messages.STATE_BOX_FULL;
+		else st = Messages.STATE_BOX_EMPTY;
+		return posName + st;
+	}
 }
-

@@ -3,12 +3,14 @@ package tp1.control.commands;
 import java.util.Arrays;
 import java.util.List;
 
-import tp1.control.commands.exceptions.CommandParseException;
+import tp1.exceptions.CommandParseException;
 import tp1.view.Messages;
 
 public class CommandGenerator {
 	//lista de comandos declarados como instancias reconocidas por el programa.
 	private static final List<Command> availableCommands = Arrays.asList(
+			new LoadCommand(),
+			new SaveCommand(),
 			new AddObjectCommand(),
 			new ActionCommand(),
 			new UpdateCommand(),

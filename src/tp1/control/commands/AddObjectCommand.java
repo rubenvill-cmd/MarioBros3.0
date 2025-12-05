@@ -1,7 +1,8 @@
 package tp1.control.commands;
 
-import tp1.control.commands.exceptions.CommandExecuteException;
-import tp1.control.commands.exceptions.CommandParseException;
+import tp1.exceptions.CommandExecuteException;
+import tp1.exceptions.CommandParseException;
+import tp1.exceptions.GameModelException;
 import tp1.logic.GameInterfaces.GameModel;
 import tp1.view.GameView;
 import tp1.view.Messages;
@@ -20,7 +21,7 @@ public class AddObjectCommand extends AbstractCommand{
 	}
 	
 	public void execute(GameModel game, GameView view) throws CommandExecuteException {
-		//try {
+		try {
 			GameObject gameObject = game.addGameObject(this.objectDescription);
 			if (gameObject != null) {
 				view.showGame();
@@ -29,10 +30,17 @@ public class AddObjectCommand extends AbstractCommand{
 				//view.showError("Invalid game object: " + String.join(" ", objectDescription));
 			}
 			
-		//} catch (GameModelException e) { (offBoard y ObjectParseException)
+		} catch (GameModelException e) {
+			//throw new CommandExecuteException(Messages.ERROR_COMMAND_EXECUTE, e);
+			 /*if (e.getCause() != null) {
+				 throw new CommandExecuteException(Messages.ERROR_COMMAND_EXECUTE, e.getCause());
+		     } 
+			 else {*/
+				 throw new CommandExecuteException(Messages.ERROR_COMMAND_EXECUTE, e);
+		     //}
 			//Aquí tiene que devolver problema del parse de este objeto por muchos argumentos
 			//Posición fuera de la board etc.
-		//}
+		}
 	}
 	
 	public Command parse(String[] objWords) throws CommandParseException {
@@ -42,6 +50,7 @@ public class AddObjectCommand extends AbstractCommand{
 				return this;
 			}
 			else {
+				//AQUI LANZA LA EXCEPCIÓN SI HAY MENOS ARGUMENTOS QUE (AO, POS, NOMBRE)
 				throw new CommandParseException(Messages.COMMAND_INCORRECT_PARAMETER_NUMBER);
 			}
 		}
